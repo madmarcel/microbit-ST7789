@@ -478,22 +478,22 @@ enum Color {
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
     export function rgb(red: number = 255, green: number = 0, blue: number = 0): number {
-        return converto565(packRGB(red, green, blue));
-    }
-
-    function packRGB(a: number, b: number, c: number): number {
-        return ((a & 0xFF) << 16) | ((b & 0xFF) << 8) | (c & 0xFF);
-    }
+        return converToRGB565(packRGB(red, green, blue));
+    }    
 
     //% block="color $color"
     //% color.shadow="colorNumberPicker"
     //% color=#f38d28
     //% weight=97
     export function showColor(color: number): number {
-        return converto565(color);
+        return converToRGB565(color);
     }
 
-    function converto565(color: number) {
+    function converToRGB565(color: number) {
         return(((color&0xf80000)>>8)|((color&0xfc00)>>5)|((color&0xf8)>>3));
+    }
+
+    function packRGB(a: number, b: number, c: number): number {
+        return ((a & 0xFF) << 16) | ((b & 0xFF) << 8) | (c & 0xFF);
     }
  }
