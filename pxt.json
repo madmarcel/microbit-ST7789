@@ -1,16 +1,16 @@
 {
-    "name": "RB-TFT1.8",
-    "version": "1.0.6",
-    "description": "MakeCode Package for the RB-TFT1.8 (ST7735 1.8' TFT Display).",
+    "name": "ST7789",
+    "version": "1.0.1",
+    "description": "MakeCode Package for the ST7789 TFT Display",
     "license": "MIT",
     "dependencies": {
         "core": "*"
     },
     "files": [
         "README.md",
-        "RB-TFT18.ts",
-        "_locales/de/rb-tft18-strings.json",
-        "_locales/de/rb-tft18-jsdoc-strings.json"
+        "ST7789.ts",
+        "_locales/de/ST7789-strings.json",
+        "_locales/de/ST7789-jsdoc-strings.json"
     ],
     "testFiles": [
         "test.ts"

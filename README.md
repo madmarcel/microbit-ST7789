@@ -1,13 +1,12 @@
-# MakeCode Package for the RB-TFT1.8 (ST7735 1.8" TFT Display).
+# MakeCode Package for the ST7789 TFT Display.
 
-This library provides a Microsoft Makecode package for the Joy-IT RB-TFT1.8 ST7735 module.
-See https://joy-it.net/products/RB-TFT1.8 for more details.
+This library provides a Microsoft Makecode package for the ST7789 TFT Display.
 
 ## Connection
 
 The display needs to be connected with seven pins to the Micro:bit:
 
-| RB-TFT1.8     | Micro:bit     |
+| ST7789        | Micro:bit     |
 | ------------- |:-------------:|
 | VCC           | 3V            |
 | GND           | GND           |
@@ -47,7 +46,7 @@ The TFT display needs to be initialized before it is ready to use. All necessary
 
 ```typescript
 // Initialize TFT Display
-RBTFT18.init()
+ST7789.init(240, 240)
 ```
 
 ## Single pixels
@@ -55,7 +54,7 @@ Single pixels can be shown on the screen. The function takes three values. The x
 
 ```typescript
 // Draw a single red pixel
-RBTFT18.drawPixel(10, 10, Color.Red)
+ST7789.drawPixel(10, 10, Color.Red)
 ```
 
 ## Straight lines
@@ -63,7 +62,7 @@ Straight lines can be drawn across the screen (horizontal, vertical and diagonal
 
 ```typescript
 // Draw a straight blue line
-RBTFT18.drawLine(0, 0, 100, 100, Color.Blue)
+ST7789.drawLine(0, 0, 100, 100, Color.Blue)
 ```
 
 ## Rectangles
@@ -71,7 +70,7 @@ Rectangles can be drawn on the screen. The function takes four five values: The 
 
 ```typescript
 // Draw a yellow rectangle
-RBTFT18.drawRectangle(0, 0, 100, 120, Color.Yellow)
+ST7789.drawRectangle(0, 0, 100, 120, Color.Yellow)
 ```
 
 ## Circles
@@ -79,7 +78,7 @@ Circles can be drawn on the screen as well. Depending on the size of the circle,
 
 ```typescript
 // Draw a green circle
-RBTFT18.drawCircle(50, 50, 50, Color.Green)
+ST7789.drawCircle(50, 50, 50, Color.Green)
 ```
 
 ## Show text
@@ -87,7 +86,7 @@ You can also show text on the display. The font size can be set in 5 different z
 
 ```typescript
 // Show white text with black background
-RBTFT18.showString("I am your RB-TFT1.8!", 10, 10, 1, Color.White, Color.Black)
+ST7789.showString("I am your RB-TFT1.8!", 10, 10, 1, Color.White, Color.Black)
 ```
 
 ## Clear screen
@@ -95,7 +94,7 @@ New objects never replace already drawn objects on the screen. Instead, they are
 
 ```typescript
 // Clear screen - replaces whole screen with a black rectangle
-RBTFT18.clearScreen()
+ST7789.clearScreen()
 ```
 
 ## Turn off display
@@ -103,7 +102,7 @@ You can turn off the display. In this mode, the frame memory is disabled and a b
 
 ```typescript
 // Turn off display
-RBTFT18.turnOff()
+ST7789.turnOff()
 ```
 
 ## Turn on display
@@ -111,7 +110,15 @@ You turn the display on again and enable the output from the frame memory. The f
 
 ```typescript
 // Turn on display
-RBTFT18.turnOn()
+ST7789.turnOn()
+```
+
+## Rotate display
+You can rotate the display. Accepts 0 - 3
+
+```typescript
+// Rotate display
+ST7789.rotate(1)
 ```
 
 ## Supported targets

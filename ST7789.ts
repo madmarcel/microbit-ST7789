@@ -4,52 +4,52 @@
 enum Color {
    //% block="Black"
    Black = 0x0000,
-   //% block="Navy"
-   Navy = 0x000F,
-   //% block="DarkGreen"
-   DarkGreen = 0x03E0,
-   //% block="DarkCyan"
-   DarkCyan = 0x03EF,
-   //% block="Maroon"
-   Maroon = 0x7800,
-   //% block="Purple"
-   Purple = 0x780F,
-   //% block="Olive"
-   Olive = 0x7BE0,
-   //% block="LightGrey"
-   LightGrey = 0xC618,
-   //% block="DarkGrey"
-   DarkGrey = 0x7BEF,
    //% block="Blue"
    Blue = 0x001F,
-   //% block="Green"
-   Green = 0x07E0,
    //% block="Cyan"
    Cyan = 0x07FF,
-   //% block="Red"
-   Red = 0xF800,
-   //% block="Magenta"
-   Magenta = 0xF81F,
-   //% block="Yellow"
-   Yellow = 0xFFE0,
-   //% block="White"
-   White = 0xFFFF,
-   //% block="Orange"
-   Orange = 0xFD20,
+   //% block="DarkCyan"
+   DarkCyan = 0x03EF,
+   //% block="DarkGreen"
+   DarkGreen = 0x03E0,
+   //% block="DarkGrey"
+   DarkGrey = 0x7BEF,
+   //% block="Green"
+   Green = 0x07E0,
    //% block="GreenYellow"
    GreenYellow = 0xAFE5,
+   //% block="LightGrey"
+   LightGrey = 0xC618,
+   //% block="Magenta"
+   Magenta = 0xF81F,
+   //% block="Maroon"
+   Maroon = 0x7800,
+   //% block="Navy"
+   Navy = 0x000F,
+   //% block="Olive"
+   Olive = 0x7BE0,
+   //% block="Orange"
+   Orange = 0xFD20,
    //% block="Pink"
-   Pink = 0xF81F
+   Pink = 0xFE17,
+   //% block="Purple"
+   Purple = 0x780F,
+   //% block="Red"
+   Red = 0xF800,
+   //% block="White"
+   White = 0xFFFF,
+   //% block="Yellow"
+   Yellow = 0xFFE0
 }
 
 /**
-  * RB-TFT1.8-V2 Block
+  * ST7789 Block
   */
-  //% color="#275C6B" icon="\uf26c" weight=95 block="RB-TFT18-V2"
- namespace RBTFT18 {
+  //% color="#275C6B" icon="\uf26c" weight=95 block="ST7789"
+ namespace ST7789 {
      // Display commands & constants
-     let TFTWIDTH = 130
-     let TFTHEIGHT = 162
+     let TFTWIDTH = 240
+     let TFTHEIGHT = 240
 
      /**
       * TFT Commands
@@ -60,6 +60,7 @@ enum Color {
           SLPOUT = 0x11,
           NORON = 0x13,
           INVOFF = 0x20,
+          INVON = 0x21,
           DISPOFF = 0x28,
           DISPON = 0x29,
           CASET = 0x2A,
@@ -79,7 +80,13 @@ enum Color {
           VMCTR1 = 0xC5,
           GMCTRP1 = 0xE0,
           GMCTRN1 = 0xE1,
-          DELAY = 0xFFFF
+          DELAY = 0xFFFF,
+
+          ST77XX_MADCTL_MY = 0x80,
+          ST77XX_MADCTL_MX = 0x40,
+          ST77XX_MADCTL_MV = 0x20,
+          ST77XX_MADCTL_ML = 0x10,
+          ST77XX_MADCTL_RGB = 0x00,          
       }
 
       /**
@@ -162,9 +169,13 @@ enum Color {
      /*
       * Initial TFT setup
       */
-     //% block="Initialize TFT Display"
+     //% block="Initialize TFT Display with width %width and height %height"
+     //% width.min=100 width.defl=240
+     //% height.min=100 height.defl=240
      //% weight=100
-     export function init(): void {
+     export function init(width: number = 240, height: number = 240): void {
+        TFTHEIGHT = height
+        TFTWIDTH = width
          // set SPI frequency
          pins.spiFrequency(4000000)
 
@@ -177,7 +188,7 @@ enum Color {
          // Frame rate control - idle mode
          send(TFTCommands.FRMCTR2, [0x01, 0x2C, 0x2D, 0x01, 0x2C, 0x2D])
          // Display inversion control
-         send(TFTCommands.INVCTR, [0x07])
+         // send(TFTCommands.INVCTR, [0x07])
          // Display power control
          send(TFTCommands.PWCTR1, [0xA2, 0x02, 0x84])
          send(TFTCommands.PWCTR2, [0x8A, 0x2A])
@@ -187,23 +198,25 @@ enum Color {
          send(TFTCommands.VMCTR1, [0x0E])
 
          // Disable inversion
-         send(TFTCommands.INVOFF, [])
-
-         // Memory access control
-         send(TFTCommands.MADCTL, [0xC8])
+         // send(TFTCommands.INVOFF, [])
 
          // Set 16-bit color mode
-         send(TFTCommands.COLMOD, [0x05])
+         send(TFTCommands.COLMOD, [0x55])
 
+         // Memory access control
+         send(TFTCommands.MADCTL, [0x08])         
+         
+         // set the display size        
          // Column address set
-         send(TFTCommands.CASET, [0x00, 0x00, 0x00, 0x7F])
+         send(TFTCommands.CASET, [0x00, 0x00, 0x00, TFTWIDTH])
          // Row address set
-         send(TFTCommands.RASET, [0x00, 0x00, 0x00, 0x9F])
+         send(TFTCommands.RASET, [0x00, 0x00, 0x00, TFTHEIGHT])
 
          // Set Gamma
          send(TFTCommands.GMCTRP1, [0x02, 0x1C, 0x07, 0x12, 0x37, 0x32, 0x29, 0x2D, 0x29, 0x25, 0x2B, 0x39, 0x00, 0x01, 0x03, 0x10])
          send(TFTCommands.GMCTRN1, [0x03, 0x1D, 0x07, 0x06, 0x2E, 0x2C, 0x29, 0x2D, 0x2E, 0x2E, 0x37, 0x3F, 0x00, 0x00, 0x02, 0x10])
 
+         send(TFTCommands.INVON, []) // hack
          // Set normal mode
          send(TFTCommands.NORON, [])
 
@@ -214,11 +227,14 @@ enum Color {
      /*
       * Draw single pixel
       */
-     //% block="Draw single pixel at x:%x|y:%y with color:%color"
+     //% block="Draw single pixel at x %x|y %y with %color"
      //% x.min=1 x.max=130
      //% y.min=1 y.max=162
      //% weight=90
-     export function drawPixel(x: number, y: number, color: Color): void {
+     //% inlineInputMode=inline
+     //% color.shadow=ST7789_colors
+     //% color.defl=Color.Red
+     export function drawPixel(x: number = 1, y: number = 1, color: number = Color.Red): void {
          setWindow(x, y, x+1, y+1)
          send(TFTCommands.RAMWR, [color >> 8, color])
      }
@@ -226,13 +242,16 @@ enum Color {
      /*
       * Draw a straight line from one point to another
       */
-     //% block="Draw line from x0:%x0|y0:%y0 to x1:%x1|y:%y1 with color:%color"
-     //% x0.min=1 x0.max=130
-     //% y0.min=1 y0.max=162
-     //% x1.min=1 x1.max=130
-     //% y1.min=1 y1.max=162
+     //% block="Draw line from x0 %x0 y0 %y0 to|x1 %x1 y %y1|with %color"
+     //% x0.min=1 x0.max=130 x0.defl=1
+     //% y0.min=1 y0.max=162 y0.defl=1
+     //% x1.min=1 x1.max=130 x1.defl=10
+     //% y1.min=1 y1.max=162 y1.defl=10
      //% weight=85
-     export function drawLine(x0: number, y0: number, x1: number, y1: number, color: Color): void {
+     //% inlineInputMode=inline
+     //% color.shadow=ST7789_colors
+     //% color.defl=Color.Yellow
+     export function drawLine(x0: number = 1, y0: number = 1, x1: number = 20, y1: number = 20, color: number = Color.Yellow): void {
          let xDelta = x1 - x0
          let yDelta = y1 - y0
 
@@ -265,11 +284,14 @@ enum Color {
      /*
       * Draw rectangle with a given color
       */
-     //% block="Draw rectangle at x:%x|y:%y with width:%width|height:%height|color:%color"
+     //% block="Draw rectangle at x %x|y %y with width %width|height %height|and %color"
      //% x.min=1 x.max=130
      //% y.min=1 y.max=162
      //% weight=80
-     export function drawRectangle(x: number, y: number, width: number, height: number, color: Color): void {
+     //% inlineInputMode=inline
+     //% color.shadow=ST7789_colors
+     //% color.defl=Color.Red
+     export function drawRectangle(x: number, y: number, width: number, height: number, color: number = Color.Red): void {
 
          // Convert color
          let hiColor = (color >> 8) % 256
@@ -292,11 +314,16 @@ enum Color {
      /*
       * Draw circle with a given radius
       */
-     //% block="Draw circle at: x:%x|y:%y with radius:%r and color:%color"
-     //% x.min=1 x.max=130
-     //% y.min=1 y.max=162
+     //% block="Draw circle at x %x y %y with radius %radius and %color"
+     //% x.min=1 x.max=130 x.defl=1
+     //% y.min=1 y.max=162 y.defl=1
+     //% radius.min=1 radius.defl=20
+     //% color.defl=0xF800
      //% weight=75
-     export function drawCircle(x: number, y: number, radius: number, color: Color): void {
+     //% inlineInputMode=inline
+     //% color.shadow=ST7789_colors
+     //% color.defl=Color.Green
+     export function drawCircle(x: number = 20, y: number = 20, radius: number = 20, color: number = Color.Green): void {
         for(let y1 = -radius ; y1 <= 0 ; y1++) {
             for(let x1 = -radius ; x1 <= 0 ; x1++) {
                 if((x1 * x1 + y1 * y1) <= (radius * radius)) {
@@ -312,12 +339,16 @@ enum Color {
      /*
       * Display string at given coordinates
       */
-      //% block="Show string:%string at x:%x and y:%y with zoom-level:%zoom color:%color and background color:%bgcolor"
+      //% block="Show string %string|at x %x|and y %y|with size %zoom and text %color and background %bgcolor"
       //% weight=70
-      //% x.min=1 x.max=130
-      //% y.min=1 y.max=162
-      //% zoom.min=1 zoom.max=5
-      export function showString(text: string, x: number, y:number, zoom: number, color: Color, bgColor: Color): void {
+      //% x.min=1 x.defl=1 x.max=130
+      //% y.min=1 y.defl=1 y.max=162
+      //% zoom.min=1 zoom.max=5 zoom.defl=1
+      //% color.shadow=ST7789_colors
+      //% bgcolor.shadow=ST7789_colors
+      //% color.defl=Color.Yellow
+      //% bgcolor.defl=Color.Black
+      export function showString(text: string, x: number = 1, y: number = 1, zoom: number = 1, color: number = Color.Yellow, bgColor: number = Color.Black): void {
           let hiColor = (color >> 8) % 256
           let loColor = color % 256
           let bgHiColor = (bgColor >> 8) % 256
@@ -384,7 +415,7 @@ enum Color {
      //% block="Clear screen"
      //% weight=65
      export function clearScreen(): void {
-         drawRectangle(0, 0, TFTWIDTH, TFTHEIGHT, 0)
+         drawRectangle(0, 0, TFTWIDTH, TFTHEIGHT, Color.Black)
      }
 
      //% block="Turn display off"
@@ -399,5 +430,65 @@ enum Color {
          send(TFTCommands.DISPON, [])
      }
 
+     //% block="Rotate display|rotation %rotation"
+     //% rotation.min=0 rotation.max=3 rotation.defl=2
+     //% weight=50
+     export function rotate(rotation: number = 2): void {
+        let madctl = 0
 
+        switch (rotation) {
+        case 0:
+            madctl = TFTCommands.ST77XX_MADCTL_MX | TFTCommands.ST77XX_MADCTL_MY | TFTCommands.ST77XX_MADCTL_RGB;
+            break;
+        case 1:
+            madctl = TFTCommands.ST77XX_MADCTL_MY | TFTCommands.ST77XX_MADCTL_MV | TFTCommands.ST77XX_MADCTL_RGB;
+            break;
+        case 2:
+            madctl = TFTCommands.ST77XX_MADCTL_RGB;
+            break;
+        case 3:
+            madctl = TFTCommands.ST77XX_MADCTL_MX | TFTCommands.ST77XX_MADCTL_MV | TFTCommands.ST77XX_MADCTL_RGB;
+            break;
+        }
+
+        send(TFTCommands.MADCTL, [ madctl ])
+     }
+
+    /**
+     * Gets the RGB value of a known color
+    */
+    //% weight=95 blockGap=8
+    //% blockId="ST7789_colors" block="color %color"
+    //% color=#f38d28
+    export function colors(color: Color = Color.Red): number {
+        return color;
+    }
+
+    /**
+     * Converts red, green, blue channels into a RGB color
+     * @param red value of the red channel between 0 and 255. eg: 255
+     * @param green value of the green channel between 0 and 255. eg: 255
+     * @param blue value of the blue channel between 0 and 255. eg: 255
+     */
+    //% weight=96
+    //% blockId="ST7789_rgb" block="red %red|green %green|blue %blue"
+    //% color=#f38d28
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    export function rgb(red: number = 255, green: number = 0, blue: number = 0): number {
+        return packRGB(red, green, blue);
+    }
+
+    function packRGB(a: number, b: number, c: number): number {
+        return ((a & 0xFF) << 16) | ((b & 0xFF) << 8) | (c & 0xFF);
+    }
+
+    //% block="color $color"
+    //% color.shadow="colorNumberPicker"
+    //% color=#f38d28
+    //% weight=97
+    export function showColor(color: number): number {
+        return color;
+    }
  }
