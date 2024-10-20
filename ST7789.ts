@@ -228,8 +228,8 @@ enum Color {
       * Draw single pixel
       */
      //% block="Draw single pixel at x %x|y %y with %color"
-     //% x.min=1 x.max=130
-     //% y.min=1 y.max=162
+     //% x.min=1 x.max=130 x.defl=1
+     //% y.min=1 y.max=162 y.defl=1
      //% weight=90
      //% inlineInputMode=inline
      //% color.shadow=ST7789_colors
@@ -245,8 +245,8 @@ enum Color {
      //% block="Draw line from x0 %x0 y0 %y0 to|x1 %x1 y %y1|with %color"
      //% x0.min=1 x0.max=130 x0.defl=1
      //% y0.min=1 y0.max=162 y0.defl=1
-     //% x1.min=1 x1.max=130 x1.defl=10
-     //% y1.min=1 y1.max=162 y1.defl=10
+     //% x1.min=1 x1.max=130 x1.defl=20
+     //% y1.min=1 y1.max=162 y1.defl=20
      //% weight=85
      //% inlineInputMode=inline
      //% color.shadow=ST7789_colors
@@ -285,13 +285,15 @@ enum Color {
       * Draw rectangle with a given color
       */
      //% block="Draw rectangle at x %x|y %y with width %width|height %height|and %color"
-     //% x.min=1 x.max=130
-     //% y.min=1 y.max=162
+     //% x.min=1 x.max=130 x.defl=1
+     //% y.min=1 y.max=162 y.defl=1
+     //% height.min=1 height.defl=30
+     //% width.min=1 width.defl=30
      //% weight=80
      //% inlineInputMode=inline
      //% color.shadow=ST7789_colors
      //% color.defl=Color.Red
-     export function drawRectangle(x: number, y: number, width: number, height: number, color: number = Color.Red): void {
+     export function drawRectangle(x: number = 1, y: number = 1, width: number = 30, height: number = 30, color: number = Color.Red): void {
 
          // Convert color
          let hiColor = (color >> 8) % 256
@@ -318,7 +320,6 @@ enum Color {
      //% x.min=1 x.max=130 x.defl=1
      //% y.min=1 y.max=162 y.defl=1
      //% radius.min=1 radius.defl=20
-     //% color.defl=0xF800
      //% weight=75
      //% inlineInputMode=inline
      //% color.shadow=ST7789_colors
@@ -341,8 +342,8 @@ enum Color {
       */
       //% block="Show string %string|at x %x|and y %y|with size %zoom and text %color and background %bgcolor"
       //% weight=70
-      //% x.min=1 x.defl=1 x.max=130
-      //% y.min=1 y.defl=1 y.max=162
+      //% x.min=1 x.defl=1
+      //% y.min=1 y.defl=1
       //% zoom.min=1 zoom.max=5 zoom.defl=1
       //% color.shadow=ST7789_colors
       //% bgcolor.shadow=ST7789_colors
@@ -477,7 +478,7 @@ enum Color {
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
     export function rgb(red: number = 255, green: number = 0, blue: number = 0): number {
-        return packRGB(red, green, blue);
+        return converto565(packRGB(red, green, blue));
     }
 
     function packRGB(a: number, b: number, c: number): number {
@@ -489,6 +490,10 @@ enum Color {
     //% color=#f38d28
     //% weight=97
     export function showColor(color: number): number {
-        return color;
+        return converto565(color);
+    }
+
+    function converto565(color: number) {
+        return(((color&0xf80000)>>8)|((color&0xfc00)>>5)|((color&0xf8)>>3));
     }
  }
