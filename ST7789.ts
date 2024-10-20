@@ -222,6 +222,8 @@ enum Color {
 
          // Turn display on
          send(TFTCommands.DISPON, [])
+
+         rotate(3)
      }
 
      /*
@@ -421,12 +423,14 @@ enum Color {
 
      //% block="Turn display off"
      //% weight=60
+     //% advanced=true
      export function turnOff(): void {
          send(TFTCommands.DISPOFF, [])
      }
 
      //% block="Turn display on"
      //% weight=55
+     //% advanced=true
      export function turnOn(): void {
          send(TFTCommands.DISPON, [])
      }
@@ -434,6 +438,7 @@ enum Color {
      //% block="Rotate display|rotation %rotation"
      //% rotation.min=0 rotation.max=3 rotation.defl=2
      //% weight=50
+     //% advanced=true
      export function rotate(rotation: number = 2): void {
         let madctl = 0
 
